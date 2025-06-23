@@ -4,3 +4,36 @@ data "aws_s3_bucket" "existing_s3_bucket" {
   count  = var.create_new_bucket ? 0 : length(var.s3_bucket_names)
   bucket = var.s3_bucket_names[count.index]
 }
+
+# filter_archive_buckets
+locals {
+  data_buckets = [
+    for bucket in var.s3_bucket_names : bucket
+    if can(regex(".*data.*", bucket))
+  ]
+
+  archive_buckets = [
+    for bucket in var.s3_bucket_names : bucket
+    if can(regex(".*archive.*", bucket))
+  ]
+
+  all_buckets = tolist(concat(local.data_buckets, local.archive_buckets))
+}
+
+data "aws_iam_policy_document" "s3_bucket_policy" {
+  count = var.create_new_bucket ? length(local.data_buckets) : 0
+
+  statement {
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      "${aws_s3_bucket.s3_bucket[count.index].arn}/*",
+      aws_s3_bucket.s3_bucket[count.index].arn
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+}

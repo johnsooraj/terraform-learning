@@ -5,8 +5,3 @@ output "s3_bucket_names" {
   description = "The names of the S3 buckets created."
   value       = module.s3bucket.s3_bucket_names
 }
-
-output "s3_bucket_arns" {
-  description = "values of the S3 bucket ARNs created"
-  value       = module.s3bucket.s3_bucket_arns
-}
