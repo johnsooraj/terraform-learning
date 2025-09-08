@@ -11,17 +11,17 @@ locals {
     for bucket in var.s3_bucket_names : bucket
     if can(regex(".*data.*", bucket))
   ]
-
+ 
   archive_buckets = [
     for bucket in var.s3_bucket_names : bucket
-    if can(regex(".*archive.*", bucket))
+    if !can(regex(".*data.*", bucket))
   ]
 
-  all_buckets = tolist(concat(local.data_buckets, local.archive_buckets))
+  all_buckets = tolist(concat(local.archive_buckets))
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy" {
-  count = var.create_new_bucket ? length(local.data_buckets) : 0
+  count = var.create_new_bucket ? length(local.all_buckets) : 0
 
   statement {
     actions = [

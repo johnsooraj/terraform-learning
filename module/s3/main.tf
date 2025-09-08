@@ -59,8 +59,8 @@ resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
 
 # S3 Policy to data bucket
 resource "aws_s3_bucket_policy" "s3_data_bucket_policy" {
-  count  = var.create_new_bucket ? length(local.data_buckets) : 0
-  bucket = local.data_buckets[count.index]
+  count  = var.create_new_bucket ? length(local.all_buckets) : 0
+  bucket = local.all_buckets[count.index]
   policy = data.aws_iam_policy_document.s3_bucket_policy[count.index].json
 }
 
@@ -71,7 +71,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket_public_access_block" {
   # This is the S3 bucket ID to which the public access block configuration will be applied
   bucket                  = local.all_buckets[count.index]
   block_public_acls       = false
-  block_public_policy     = true
+  block_public_policy     = false
   ignore_public_acls      = true
   restrict_public_buckets = true
   depends_on = [

@@ -31,3 +31,17 @@ module "s3bucket" {
     Project     = "MyProject"
   }
 }
+
+module "iam_role_policy" {
+  source = "./module/iam-role-policy"
+}
+
+module "lambda" {
+  source   = "./module/lambda"
+  role_arn = module.iam_role_policy.aws_lambda_role_arn
+}
+
+module "event_bridge" {
+  source                         = "./module/event-bridge"
+  weekly_run_lambda_function_arn = module.lambda.weekly_run_lambda_function_arn
+}
