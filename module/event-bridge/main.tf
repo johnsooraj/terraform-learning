@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "weekly_run_rule" {
   name                = "weekly-run-rule"
   description         = "Triggers the weekly run event every Monday at 00:00 UTC"
-  schedule_expression = "cron(0/3 * ? * * *)"
+  schedule_expression = "cron(0 15 ? * SUN *)"
 }
 
 resource "aws_cloudwatch_event_target" "weekly_run_target" {
